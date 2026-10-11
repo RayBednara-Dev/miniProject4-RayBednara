@@ -68,7 +68,7 @@ def summarize(records, group_by, value, agg, decimals=2):
 
 def top_n(records, key, n):
     """Return the `n` rows with the largest numeric `key`, sorted descending."""
-    raise NotImplementedError
+    return sorted(records, key=lambda row: float(row[key]), reverse=True)[:n]
 
 
 def to_report(summary):
