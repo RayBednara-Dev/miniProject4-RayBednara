@@ -1,3 +1,7 @@
+# INF601 - Advanced Programming in Python
+# Raymond Bednara
+# Mini Project 4
+
 """buildhub CLI.  Implement so:  python -m buildhub summarize <file> --group-by G --value V --agg A
 and:  python -m buildhub top <file> --key K --n N   both work (see SPEC.md)."""
 import argparse
