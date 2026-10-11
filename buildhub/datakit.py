@@ -74,4 +74,4 @@ def top_n(records, key, n):
 def to_report(summary):
     """Render a {key: value} dict as lines 'key: value', one per line, sorted
     ascending by key, joined with '\\n' (no trailing newline)."""
-    raise NotImplementedError
+    return "\n".join(f"{key}: {value}" for key, value in sorted(summary.items()))
