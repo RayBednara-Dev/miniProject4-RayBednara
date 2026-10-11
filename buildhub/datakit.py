@@ -6,6 +6,9 @@ tests as you go:  pytest tests/public
 """
 from __future__ import annotations
 
+import csv
+import json
+
 
 def load_records(path):
     """Load a .csv or .json file into a list of dict rows.
@@ -14,13 +17,24 @@ def load_records(path):
     - .json -> a list of objects (returned as-is)
     - anything else -> raise ValueError
     """
-    raise NotImplementedError
+    if path.endswith(".csv"):
+        with open(path, newline="") as f:
+            return list(csv.DictReader(f))
+    elif path.endswith(".json"):
+        with open(path) as f:
+            return json.load(f)
+    else:
+        raise ValueError(f"Unsupported file type: {path}")
 
 
 def filter_records(records, **criteria):
     """Return only the rows where, for every field=value pair passed as a keyword
     argument, str(row[field]) == str(value)."""
-    raise NotImplementedError
+    return [
+        row
+        for row in records
+        if all(str(row[field]) == str(value) for field, value in criteria.items())
+    ]
 
 
 def summarize(records, group_by, value, agg, decimals=2):
@@ -34,7 +48,22 @@ def summarize(records, group_by, value, agg, decimals=2):
       "max"   -> largest value (float)
     Return a dict mapping each group value to its aggregate. Unknown agg -> ValueError.
     """
-    raise NotImplementedError
+    groups: dict = {}
+    for row in records:
+        groups.setdefault(row[group_by], []).append(float(row[value]))
+
+    if agg == "count":
+        return {key: len(vals) for key, vals in groups.items()}
+    elif agg == "sum":
+        return {key: sum(vals) for key, vals in groups.items()}
+    elif agg == "mean":
+        return {key: round(sum(vals) / len(vals), decimals) for key, vals in groups.items()}
+    elif agg == "min":
+        return {key: min(vals) for key, vals in groups.items()}
+    elif agg == "max":
+        return {key: max(vals) for key, vals in groups.items()}
+    else:
+        raise ValueError(f"Unknown agg: {agg}")
 
 
 def top_n(records, key, n):
